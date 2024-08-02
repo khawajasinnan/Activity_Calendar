@@ -54,8 +54,27 @@ public class Main {
                     System.out.println("End Day");
                     int endDay = scanner.nextInt();
 
-                    List<Activity> userActivities = calendar.listUserActivities(userId, startMonth, startDay, endMonth, endDay);
+                    var userActivities = calendar.listUserActivities(userId, startMonth, startDay, endMonth, endDay);
                     for (Activity act : userActivities) {
+                        System.out.println(act);
+                    }
+                    break;
+                case 5:
+                    System.out.println("Enter User Id 1: ");
+                    String userId1 = scanner.nextLine();
+                    System.out.println("Enter User Id 2: ");
+                    String userId2 = scanner.nextLine();
+                    System.out.println("Enter Start Month: ");
+                    startMonth = scanner.nextInt();
+                    System.out.println("Enter Start Day: ");
+                    startDay = scanner.nextInt();
+                    System.out.println("Enter End Month: ");
+                    endMonth = scanner.nextInt();
+                    System.out.println("Enter End Day: ");
+                    endDay = scanner.nextInt();
+
+                    var clashingActivities = calendar.listClashingActivities(userId1, userId2, startMonth, startDay, endMonth, endDay);
+                    for (Activity act : clashingActivities) {
                         System.out.println(act);
                     }
                     break;

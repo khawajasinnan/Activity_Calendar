@@ -1,8 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Calendar {
     private final Activity[][][][][] calendar;
@@ -116,5 +115,53 @@ public class Calendar {
             e.printStackTrace();
         }
     }
-}
+
+    public List<Activity> listClashingActivities(String userId1, String userId2,int startMonth, int endMonth, int startDay, int endDay){
+        List<Activity> clashingActivities = new ArrayList<>();
+        for (int month = startMonth - 1; month <= endMonth - 1; month++) {
+            for(int day = (month == startMonth - 1 ? startDay - 1 : 0); day<= (month == endMonth -1 ? endDay -1:getDaysInMonth(month+1)-1); day++) {
+                for (int hour = 0; hour < 24; hour++) {
+                    Set<String> userIds = new HashSet<>();
+                    if (calendar[month][day][hour][0] != null) {
+                        for (Activity activity : calendar[month][day][hour][0]) {
+                            if (activity != null) {
+                                userIds.add(activity.getUserId());
+                            }
+                        }
+                    }
+                    if(userIds.contains(userId1) && userIds.contains(userId2)){
+                        clashingActivities.addAll(Arrays.asList(calendar[month][day][hour][0]));
+                    }
+                }
+
+            }
+        }
+        return clashingActivities;
+    }
+
+    public List<Activity> listFreeSlotsForUsers(String[]userIds, int startMonth, int endMonth, int startDay, int endDay){
+        List<Activity> freeSlots = new ArrayList<>();
+        for (int month = startMonth - 1; month <= endMonth - 1; month++) {
+            for (int day = (month == startMonth - 1 ? startDay - 1 : 0); day <= (month == endMonth - 1 ? endDay - 1 : getDaysInMonth(month + 1) - 1); day++){
+                for (int hour = 0; hour < 24; hour++) {
+                    boolean free = true;
+                    for(String userId : userIds ){
+                        if(calendar[month][day][hour] != null){
+                            for(Activity activity : calendar[month][day][hour][0]){
+                                if(activity != null && activity.getUserId().equals(userId)){
+                                    free = false;
+
+                                }
+                            }
+                        }
+                        if(!free)
+                            break;
+                    }
+                    }
+                }
+            }
+        return freeSlots;
+        }
+
+    }
 
