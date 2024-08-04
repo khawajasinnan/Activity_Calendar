@@ -150,13 +150,13 @@ public class Main {
                     break;
 
                 case 9:
-                    System.out.println("Calendar.dat");
+                    System.out.println("Enter File Name: ");
                     String saveFileName = scanner.nextLine();
                     calendar.saveToTheFile(saveFileName);
                     break;
 
                 case 10:
-                    System.out.println("Calendar.dat");
+                    System.out.println("Enter File Name: ");
                     String loadFileName = scanner.nextLine();
                     calendar.loadToTheFile(loadFileName);
                     break;
