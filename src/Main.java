@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -30,20 +31,24 @@ public class Main {
                     int day = scanner.nextInt();
                     System.out.println("Enter Hour: ");
                     int hour = scanner.nextInt();
-                    scanner.nextLine();  // Consume newline left-over
+                    scanner.nextLine();
                     System.out.println("Enter Title: ");
                     String title = scanner.nextLine();
                     System.out.println("Enter priority: ");
                     float priority = scanner.nextFloat();
-                    scanner.nextLine();  // Consume newline left-over
+                    scanner.nextLine();
                     System.out.println("Enter UserID: ");
                     String userId = scanner.nextLine();
                     System.out.println("Enter Duration: ");
                     int duration = scanner.nextInt();
-                    scanner.nextLine();  // Consume newline left-over
+                    scanner.nextLine();
 
                     var activity = new Activity(title, priority, userId, duration);
                     calendar.addActivity(month, day, hour, activity);
+                    System.out.println("Month Entered: " + month + "\n" + "Day Entered: " + day +"\n" + "Hour: " + hour + "\n" + "Title Entered: " + title + "\n" + "Priority: " + priority + "\n" + "User Id: " + userId + "\n" + "Duration: " + duration);
+                    System.out.println("----------------------------------");
+                    System.out.println(" Activities Added Successfully !!! ");
+                    System.out.println("----------------------------------");
                     break;
                 case 2:
                     System.out.println("Enter User Id: ");
@@ -62,6 +67,10 @@ public class Main {
                     for (Activity act : userActivities) {
                         System.out.println(act);
                     }
+                    System.out.println("User ID: " + userId + "\n" + "Start Month: " + startMonth +"\n" + "Start Day: " + startDay + "\n" + "End Month " + endMonth + "\n" + "End Day: " + endDay);
+                    System.out.println("----------------------------------");
+                    System.out.println("Activities Listed Successfully !!!");
+                    System.out.println("----------------------------------");
                     break;
                 case 3:
                     System.out.println("Enter user ID:");
@@ -79,6 +88,10 @@ public class Main {
                     List<Activity> topActivities = calendar.listTopActivities(userId, startMonth, startDay, endMonth, endDay, 5);
                     for (Activity act : topActivities) {
                         System.out.println(act);
+                        System.out.println("User ID: " + userId + "\n" + "Start Month: " + startMonth +"\n" + "Start Day: " + startDay + "\n" + "End Month " + endMonth + "\n" + "End Day: " + endDay);
+                        System.out.println("----------------------------------");
+                        System.out.println("Activities Listed Successfully !!!");
+                        System.out.println("----------------------------------");
                     }
                     break;
                 case 4:
@@ -100,6 +113,7 @@ public class Main {
                     for (Activity act : clashingActivities) {
                         System.out.println(act);
                     }
+                    System.out.println("User Id1: " + userId1 + "\n" +"User Id2: "+ userId2 +"\n" + "Start Month: " + startMonth +"\n" + "Start Day: " + startDay + "\n" + "End Month " + endMonth + "\n" + "End Day: " + endDay);
                     break;
                 case 5:
                     System.out.println("Enter number of users: ");
@@ -118,12 +132,13 @@ public class Main {
                     endMonth = scanner.nextInt();
                     System.out.println("Enter End Day");
                     endDay = scanner.nextInt();
-                    scanner.nextLine();  // Consume newline left-over
+                    scanner.nextLine();
 
                     List<String> freeSlots = calendar.listFreeSlotsForUsers(userIds, startMonth, startDay, endMonth, endDay);
                     for (String freeSlot : freeSlots) {
                         System.out.println(freeSlot);
                     }
+                    System.out.println("Users: " + numberOfUsers + "\n" +"User Ids: "+ Arrays.toString(userIds) +"\n" + "Start Month: " + startMonth +"\n" + "Start Day: " + startDay + "\n" + "End Month " + endMonth + "\n" + "End Day: " + endDay);
                     break;
                 case 6:
                     System.out.println("Enter month (1-12):");
@@ -147,6 +162,7 @@ public class Main {
                     System.out.println("Enter User Id: ");
                     userId = scanner.nextLine();
                     calendar.removeUserActivities(userId);
+                    System.out.println("User Id Removed Successfully");
                     break;
 
                 case 9:
@@ -158,8 +174,7 @@ public class Main {
                 case 10:
                     System.out.println("Enter File Name: ");
                     String loadFileName = scanner.nextLine();
-                    calendar.loadToTheFile(loadFileName);
-                    break;
+                    calendar.loadToTheFile(loadFileName);                    break;
                      case 11:
                          return;
 

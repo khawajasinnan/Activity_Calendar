@@ -1,9 +1,8 @@
 import java.io.*;
 import java.util.*;
 
-
 public class Calendar {
-    private final Activity[][][][][] calendar;
+    private Activity[][][][][] calendar;
 
     public Calendar() {
         calendar = new Activity[12][][][][];
@@ -11,9 +10,10 @@ public class Calendar {
         for (int month = 0; month < 12; month++) {
             int daysInMonth = getDaysInMonth(month + 1);
             calendar[month] = new Activity[daysInMonth][24][][];
-            for (int days = 0; days < daysInMonth; days++) {
-                for (int hours = 0; hours < 24; hours++) {
-                    calendar[month][days][hours] = new Activity[1][];
+
+            for (int day = 0; day < daysInMonth; day++) {
+                for (int hour = 0; hour < 24; hour++) {
+                    calendar[month][day][hour] = new Activity[1][];
                 }
             }
         }
@@ -28,37 +28,40 @@ public class Calendar {
             case 2:
                 return 28;
             default:
-                System.out.println("Invalid month: " + month);
+                throw new IllegalArgumentException("Invalid month: " + month);
         }
-        return month;
     }
 
     public void addActivity(int month, int day, int hour, Activity activity) {
         List<Activity> activities = new ArrayList<>();
         if (calendar[month - 1][day - 1][hour][0] != null) {
-            for (Activity act : calendar[month - 1][day - 1][hour][0]) {
+            for (int i = 0; i < calendar[month - 1][day - 1][hour][0].length; i++) {
+                Activity act = calendar[month - 1][day - 1][hour][0][i];
                 if (act != null) {
                     activities.add(act);
                 }
             }
-            activities.add(activity);
-            calendar[month - 1][day - 1][hour][0] = new Activity[activities.size()];
-            for (int i = 0; i < activities.size(); i++) {
-                calendar[month - 1][day - 1][hour][0][i] = activities.get(i);
-            }
+        }
+        activities.add(activity);
+        calendar[month - 1][day - 1][hour][0] = new Activity[activities.size()];
+        for (int i = 0; i < activities.size(); i++) {
+            calendar[month - 1][day - 1][hour][0][i] = activities.get(i);
         }
     }
-    public List<Activity> getActivities(int month, int day, int hour){
+
+    public List<Activity> getActivities(int month, int day, int hour) {
         List<Activity> activities = new ArrayList<>();
         if (calendar[month - 1][day - 1][hour][0] != null) {
-            for (Activity act : calendar[month - 1][day - 1][hour][0]) {
-                if(act != null){
+            for (int i = 0; i < calendar[month - 1][day - 1][hour][0].length; i++) {
+                Activity act = calendar[month - 1][day - 1][hour][0][i];
+                if (act != null) {
                     activities.add(act);
                 }
             }
         }
         return activities;
     }
+
     public List<Activity> listUserActivities(String userId, int startMonth, int startDay, int endMonth, int endDay) {
         List<Activity> userActivities = new ArrayList<>();
         for (int month = startMonth - 1; month <= endMonth - 1; month++) {
@@ -76,65 +79,74 @@ public class Calendar {
         }
         return userActivities;
     }
-    public void removeUserActivities(String userId){
-        List<Activity> activities = new ArrayList<>();
+
+    public void removeUserActivities(String userId) {
         for (int month = 0; month < 12; month++) {
-            for (int day = 0; day < getDaysInMonth(month+1); day++) {
+            for (int day = 0; day < getDaysInMonth(month + 1); day++) {
                 for (int hour = 0; hour < 24; hour++) {
                     if (calendar[month][day][hour][0] != null) {
+                        List<Activity> activities = new ArrayList<>();
                         for (Activity activity : calendar[month][day][hour][0]) {
-                            if (activity != null && activity.getUserId().equals(userId)) {
+                            if (activity != null && !activity.getUserId().equals(userId)) {
                                 activities.add(activity);
                             }
                         }
-                        calendar[month][day][hour][0] = activities.toArray( new Activity[0]);
+                        calendar[month][day][hour][0] = activities.toArray(new Activity[0]);
                     }
                 }
             }
         }
     }
-   public void loadToTheFile(String fileName) {
-           try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
-               String line;
-               while ((line = reader.readLine()) != null) {
-                   String[] tokens = line.split(",");
-                   int month = Integer.parseInt(tokens[0].split("/")[0]);
-                   int day = Integer.parseInt(tokens[1].split("/")[1]);
-                   int hour = Integer.parseInt(tokens[2]);
-                   String title = tokens[3];
-                   float priority = Float.parseFloat(tokens[4]);
-                   String userId = tokens[5];
-                   int duration = Integer.parseInt(tokens[6]);
 
-                   var activity = new Activity(title, priority, userId, duration);
-                   addActivity(month, day, hour, activity);
-               }
-           } catch (IOException e) {
-               e.printStackTrace();
-           }
-       }
+    public void saveToTheFile(String fileName) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (int month = 0; month < 12; month++) {
+                for (int day = 0; day < getDaysInMonth(month + 1); day++) {
+                    for (int hour = 0; hour < 24; hour++) {
+                        if (calendar[month][day][hour][0] != null) {
+                            for (Activity activity : calendar[month][day][hour][0]) {
+                                if (activity != null) {
+                                    writer.write((day + 1) + "/" + (month + 1) + "," + hour + "," + (hour + activity.getDuration()) + "," +
+                                            activity.getUserId() + "," + "act0" + "," +
+                                            activity.getTitle() + "," + activity.getPriority() + "\n");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-       public void saveToTheFile(String fileName) {
-           try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-               for (int month = 0; month < 12; month++) {
-                   for (int day = 0; day < getDaysInMonth(month + 1); day++) {
-                       for (int hour = 0; hour < 24; hour++) {
-                           if (calendar[month][day][hour][0] != null) {
-                               for (Activity activity : calendar[month][day][hour][0]) {
-                                   if (activity != null) {
-                                       writer.write((month + 1) + "," + (day + 1) + "," + hour + "," +
-                                               activity.getTitle() + "," + activity.getPriority() + "," +
-                                               activity.getUserId() + "," + activity.getDuration() + "\n");
-                                   }
-                               }
-                           }
-                       }
-                   }
-               }
-           } catch (IOException e) {
-               e.printStackTrace();
-           }
-       }
+    public void loadToTheFile(String fileName) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] tokens = line.split(",");
+                String[] date = tokens[0].split("/");
+                int day = Integer.parseInt(date[0]);
+                int month = Integer.parseInt(date[1]);
+                int startHour = Integer.parseInt(tokens[1]);
+                String userId = tokens[3];
+                String title = tokens[5];
+                float priority = Float.parseFloat(tokens[6]);
+                int duration = Integer.parseInt(tokens[2]) - startHour;
+
+                var activity = new Activity(title, priority, userId, duration);
+                addActivity(month, day, startHour, activity);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Activity> listTopActivities(String userId, int startMonth, int startDay, int endMonth, int endDay, int topN) {
+        List<Activity> userActivities = listUserActivities(userId, startMonth, startDay, endMonth, endDay);
+        userActivities.sort((a, b) -> Float.compare(b.getPriority(), a.getPriority()));
+        return userActivities.subList(0, Math.min(topN, userActivities.size()));
+    }
 
 
 
@@ -160,7 +172,6 @@ public class Calendar {
         return clashingActivities;
     }
 
-
     public List<String> listFreeSlotsForUsers(String[] userIds, int startMonth, int startDay, int endMonth, int endDay) {
         List<String> freeSlots = new ArrayList<>();
         for (int month = startMonth - 1; month <= endMonth - 1; month++) {
@@ -185,11 +196,6 @@ public class Calendar {
             }
         }
         return freeSlots;
-    }
-    public List<Activity> listTopActivities(String userId, int startMonth, int startDay, int endMonth, int endDay, int topN) {
-        List<Activity> userActivities = listUserActivities(userId, startMonth, startDay, endMonth, endDay);
-        userActivities.sort((a, b) -> Float.compare(b.getPriority(), a.getPriority()));
-        return userActivities.subList(0, Math.min(topN, userActivities.size()));
     }
 
     public MonthStats getMonthStats(int month) {
@@ -223,6 +229,7 @@ public class Calendar {
                 busiestDay = day + 1;
             }
         }
+
         float maxAveragePriority = 0;
         for (int day = 0; day < totalDays; day++) {
             float averagePriority = prioritySumPerDay[day] / (activitiesPerDay[day] == 0 ? 1 : activitiesPerDay[day]);
@@ -232,11 +239,7 @@ public class Calendar {
             }
         }
 
-        int activitiesInHighestPriorityDay = highestPriorityDay > 0 && highestPriorityDay <= totalDays
-                ? activitiesPerDay[highestPriorityDay - 1]
-                : 0;
-
-        return new MonthStats(totalActivities, totalActivities / totalDays, busiestDay, maxActivitiesInDay, highestPriorityDay, activitiesInHighestPriorityDay);
+        return new MonthStats(totalActivities, totalActivities / totalDays, busiestDay, maxActivitiesInDay, highestPriorityDay, activitiesPerDay[highestPriorityDay - 1]);
     }
 
     public YearStats getYearStats() {
@@ -338,4 +341,3 @@ public class Calendar {
         }
     }
 }
-
