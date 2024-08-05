@@ -10,18 +10,6 @@ public class Activity {
         this.userId = userId;
         this.duration = duration;
     }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public void setPriority(float priority) {
-        this.priority = priority;
-    }
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
     public String getTitle() {
         return title;
     }
